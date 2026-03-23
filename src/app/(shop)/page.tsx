@@ -1,8 +1,14 @@
+import { Title, ProductGrid } from "@/components";
+import { initialData } from "@/seed/seed";
+
+const products = initialData.products;
 
 export default function Shop() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center font-title">
-      <h1>Shop</h1>
-    </div>
+    <>
+      <Title title="Tienda" subtitle="Todos los productos" className="mb-2"/>
+
+      <ProductGrid products={products} />  
+    </>
   );
 }

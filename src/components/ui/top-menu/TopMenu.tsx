@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { IoCartOutline, IoSearchOutline } from "react-icons/io5";
+import ButtonMenu from "./ButtonMenu";
 
 export default function TopMenu() {
   return (
@@ -46,12 +47,7 @@ export default function TopMenu() {
           </div>
         </Link>
 
-        <button
-          /* onClick={ openSideMenu } */
-          className="m-2 p-2 rounded-md transition-all hover:bg-gray-100"
-        >
-          Menú
-        </button>
+        <ButtonMenu />
       </div>
     </nav>
   );
