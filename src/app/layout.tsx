@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${openSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
