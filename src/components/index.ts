@@ -8,3 +8,7 @@ export * from './ui/sidebar/SidebarLink';
 export * from './ui/title/Title';
 export * from './ui/top-menu/TopMenu';
 export * from './ui/top-menu/ButtonMenu';
+
+export * from './product/size-selector/SizeSelector';
+export * from './product/quantity-selector/QuantitySelector';
+export * from './product/slideshow/ProductSlideshow';
