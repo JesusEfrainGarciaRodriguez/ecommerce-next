@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import { Pagination, ProductGrid, Title } from "@/components";
 import { notFound } from "next/navigation";
 import { Gender } from "../../../../../generated/prisma/enums";
