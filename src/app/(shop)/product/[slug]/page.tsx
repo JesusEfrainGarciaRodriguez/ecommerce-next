@@ -3,6 +3,28 @@ export const revalidate = 604800; // 7 días en segundos
 import { ProductMobileSlideshow, ProductSlideshow, QuantitySelector, SizeSelector, StockLabel } from "@/components";
 import { getProductBySlug } from "@/actions";
 import { notFound } from "next/navigation";
+import { Metadata, ResolvingMetadata } from "next";
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const slug = (await params).slug
+   const product = await getProductBySlug(slug)
+ 
+  return {
+    title: `${product.title}`,
+    description: product.description,
+    openGraph: {
+      title: `${product.title}`,
+      description: product.description,
+      images: product.images.map((image) => ({
+        url: `${process.env.BASE_URL}/products/${image}`,
+        alt: product.title,
+      })),
+    },
+  }
+}
 
 interface Props {
   params: Promise<{ slug: string }>;

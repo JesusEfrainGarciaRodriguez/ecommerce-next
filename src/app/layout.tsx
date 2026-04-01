@@ -3,8 +3,11 @@ import { openSans } from "@/config/fonts"
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ecommerce | Next.js",
-  description: 'Ecommerce | Next.js',
+  title: {
+    template: "%s | Ecommerce",
+    default: "Home",
+  },
+  description: 'Tienda de productos',
 };
 
 export default function RootLayout({
