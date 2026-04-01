@@ -1,8 +1,9 @@
 "use server"
 
 import prisma from "@/lib/prisma"
+import { cache } from "react"
 
-export const getProductBySlug = async (slug: string) => {
+export const getProductBySlug = cache(async (slug: string) => {
     try {
         const product = await prisma.product.findUnique({
             where: { slug },
@@ -24,4 +25,4 @@ export const getProductBySlug = async (slug: string) => {
     } catch (error) {
         throw new Error("No se pudo cargar el producto")
     }
-}
+})
