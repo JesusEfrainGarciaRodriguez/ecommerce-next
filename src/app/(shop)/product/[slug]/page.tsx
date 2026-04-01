@@ -1,6 +1,6 @@
 export const revalidate = 604800; // 7 días en segundos
 
-import { ProductMobileSlideshow, ProductSlideshow, QuantitySelector, SizeSelector } from "@/components";
+import { ProductMobileSlideshow, ProductSlideshow, QuantitySelector, SizeSelector, StockLabel } from "@/components";
 import { getProductBySlug } from "@/actions";
 import { notFound } from "next/navigation";
 
@@ -37,6 +37,8 @@ export default async function ProductPage({ params }: Props) {
 
       {/* Detalles */}
       <div className="col-span-1 px-5">
+        <StockLabel slug={product.slug} />
+
         <h1 className="antialiased font-bold text-xl">
           {product.title}
         </h1>
