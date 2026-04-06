@@ -1,13 +1,15 @@
 "use client";
 import { useState } from "react";
-import { Product, Size } from "@/interfaces";
+import { CartProduct, Product, Size } from "@/interfaces";
 import { QuantitySelector } from "../quantity-selector/QuantitySelector";
 import { SizeSelector } from "../size-selector/SizeSelector";
+import { useCartStore } from "@/store";
 
 interface AddToCartProps {
   product: Product;
 }
 export const AddToCart = ({ product }: AddToCartProps) => {
+  const addProductToCart = useCartStore((state) => state.addProductToCart);
   const [size, setSize] = useState<Size | undefined>();
   const [quantity, setQuantity] = useState<number>(1);
   const [error, setError] = useState<boolean>(false);
@@ -17,7 +19,19 @@ export const AddToCart = ({ product }: AddToCartProps) => {
       setError(true);
       return;
     }
-    alert(`Agregaste ${quantity} producto(s) talla ${size} al carrito`);
+    const cartProduct: CartProduct = {
+      id: product.id,
+      slug: product.slug,
+      title: product.title,
+      price: product.price,
+      size: size,
+      quantity: quantity,
+      image: product.images[0],
+    };
+    addProductToCart(cartProduct);
+    setError(false);
+    setSize(undefined);
+    setQuantity(1);
   };
 
   return (
@@ -27,7 +41,7 @@ export const AddToCart = ({ product }: AddToCartProps) => {
           Por favor selecciona una talla
         </span>
       )}
-      
+
       <SizeSelector
         selectedSize={size}
         availableSizes={product.sizes}
