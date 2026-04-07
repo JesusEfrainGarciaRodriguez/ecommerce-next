@@ -5,10 +5,12 @@ import { persist } from "zustand/middleware";
 type CartStoreState = {
   cart: CartProduct[];
   totalItems: number;
+  _hasHydrated: boolean;
 };
 
 type CartStoreActions = {
   addProductToCart: (product: CartProduct) => void;
+  setHasHydrated: (state: boolean) => void;
 };
 
 type CartStore = CartStoreState & CartStoreActions;
@@ -16,6 +18,13 @@ type CartStore = CartStoreState & CartStoreActions;
 const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
   cart: [],
   totalItems: 0,
+  _hasHydrated: false,
+  
+  setHasHydrated: (state) => {
+    set({
+      _hasHydrated: state
+    });
+  },
 
   addProductToCart: (product: CartProduct) => {
     const { cart } = get();
@@ -51,5 +60,8 @@ const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
 export const useCartStore = create<CartStore>()(
   persist(cartStoreApi, {
     name: "shopping-cart",
+    onRehydrateStorage: (state) => {
+      return () => state.setHasHydrated(true)
+    }
   }),
 );
