@@ -8,6 +8,7 @@ export * from './ui/sidebar/SidebarLink';
 export * from './ui/title/Title';
 export * from './ui/top-menu/TopMenu';
 export * from './ui/top-menu/ButtonMenu';
+export * from './ui/top-menu/ButtonCart';
 export * from './ui/footer/Footer'
 export * from './ui/pagination/Pagination'
 

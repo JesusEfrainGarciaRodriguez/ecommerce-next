@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 
 interface State {
   cart: CartProduct[];
+  totalItems: number;
   addProductToCart: (product: CartProduct) => void;
 }
 
@@ -11,6 +12,8 @@ export const useCartStore = create<State>()(
   persist(
     (set, get) => ({
       cart: [],
+      totalItems: 0,
+
       addProductToCart: (product: CartProduct) => {
         const { cart } = get();
 
@@ -18,21 +21,31 @@ export const useCartStore = create<State>()(
           (item) => item.id === product.id && item.size === product.size,
         );
 
+        let updatedCart: CartProduct[];
+
         if (productInCart) {
-          set((state) => ({
-            cart: state.cart.map((item) =>
-              item.id === product.id && item.size === product.size
-                ? { ...item, quantity: item.quantity + product.quantity }
-                : item,
-            ),
-          }));
+          updatedCart = cart.map((item) =>
+            item.id === product.id && item.size === product.size
+              ? { ...item, quantity: item.quantity + product.quantity }
+              : item
+          );
         } else {
-          set({ cart: [...cart, product] });
+          updatedCart = [...cart, product];
         }
+
+        const totalItems = updatedCart.reduce(
+          (total, item) => total + item.quantity,
+          0
+        );
+
+        set({
+          cart: updatedCart,
+          totalItems,
+        });
       },
     }),
     {
       name: "shopping-cart",
-    },
-  ),
+    }
+  )
 );
