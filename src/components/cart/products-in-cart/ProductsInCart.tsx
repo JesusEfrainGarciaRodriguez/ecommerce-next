@@ -3,6 +3,7 @@
 import { QuantitySelector } from "@/components";
 import { useCartStore } from "@/store/cart/cart-store";
 import Image from "next/image";
+import Link from "next/link";
 
 export const ProductsInCart = () => {
   const products = useCartStore((state) => state.cart);
@@ -30,8 +31,10 @@ export const ProductsInCart = () => {
           />
 
           <div>
-            <p>{product.title}</p>
-            <p>${product.price}</p>
+            <Link href={`/product/${product.slug}`} className="hover:underline cursor-pointer">
+                <p>{product.title}</p>
+                <p>${product.price}</p>
+            </Link>
             <QuantitySelector
               quantity={product.quantity}
               onQuantityChange={() => {}}
