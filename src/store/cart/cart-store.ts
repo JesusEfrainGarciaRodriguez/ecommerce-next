@@ -9,8 +9,9 @@ type CartStoreState = {
 };
 
 type CartStoreActions = {
-  addProductToCart: (product: CartProduct) => void;
   setHasHydrated: (state: boolean) => void;
+  addProductToCart: (product: CartProduct) => void;
+  updateProductQuantity: (product: CartProduct, quantity: number) => void;
 };
 
 type CartStore = CartStoreState & CartStoreActions;
@@ -55,6 +56,25 @@ const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
       totalItems,
     });
   },
+  updateProductQuantity: (product: CartProduct, quantity: number) => {
+    const { cart } = get();
+
+    const updatedCart = cart.map((item) =>
+      item.id === product.id && item.size === product.size
+        ? { ...item, quantity }
+        : item
+    );
+
+    const totalItems = updatedCart.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+
+    set({
+      cart: updatedCart,
+      totalItems
+    });
+  }
 });
 
 export const useCartStore = create<CartStore>()(
