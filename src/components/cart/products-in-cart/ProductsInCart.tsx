@@ -9,6 +9,7 @@ export const ProductsInCart = () => {
   const products = useCartStore((state) => state.cart);
   const hasHydrated = useCartStore(state => state._hasHydrated);
   const updateProductQuantity = useCartStore(state => state.updateProductQuantity);
+  const removeProductFromCart = useCartStore(state => state.removeProductFromCart);
 
   if (!hasHydrated) {
     return <p>Loading...</p>
@@ -41,7 +42,9 @@ export const ProductsInCart = () => {
               onQuantityChange={(quantity) => updateProductQuantity(product, quantity)}
             />
 
-            <button className="underline mt-3">Remover</button>
+            <button onClick={() => removeProductFromCart(product)} className="underline mt-3">
+              Remover
+            </button>
           </div>
         </div>
       ))}
