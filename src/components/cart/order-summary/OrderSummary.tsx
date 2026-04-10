@@ -1,6 +1,7 @@
 "use client";
 import { useCartStore } from "@/store";
 import { useShallow } from "zustand/shallow";
+import { currencyFormat } from '../../../utils/currencyFormat';
 
 export const OrderSummary = () => {
   const { itemsInCart, subsTotal, taxes, total } = useCartStore(
@@ -20,13 +21,13 @@ export const OrderSummary = () => {
       </span>
 
       <span>Subtotal</span>
-      <span className="text-right">${subsTotal.toFixed(2)}</span>
+      <span className="text-right">{currencyFormat(subsTotal)}</span>
 
       <span>Impuestos (15%)</span>
-      <span className="text-right">${taxes.toFixed(2)}</span>
+      <span className="text-right">{currencyFormat(taxes)}</span>
 
       <span className="mt-5 text-2xl">Total:</span>
-      <span className="mt-5 text-2xl text-right">${total.toFixed(2)}</span>
+      <span className="mt-5 text-2xl text-right">{currencyFormat(total)}</span>
     </div>
   );
 };
