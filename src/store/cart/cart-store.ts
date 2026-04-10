@@ -47,10 +47,7 @@ const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
       updatedCart = [...cart, product];
     }
 
-    const totalItems = updatedCart.reduce(
-      (total, item) => total + item.quantity,
-      0,
-    );
+    const totalItems = calculateTotalItems(updatedCart);
 
     set({
       cart: updatedCart,
@@ -66,10 +63,7 @@ const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
         : item
     );
 
-    const totalItems = updatedCart.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+    const totalItems = calculateTotalItems(updatedCart);
 
     set({
       cart: updatedCart,
@@ -82,16 +76,19 @@ const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
     const updatedCart = cart.filter(
       (item) => !(item.id === product.id && item.size === product.size)
     );
-    const totalItems = updatedCart.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+
+    const totalItems = calculateTotalItems(updatedCart);
+
     set({
       cart: updatedCart,
       totalItems
     });
   }
 });
+
+const calculateTotalItems = (cart: CartProduct[]) => {
+  return cart.reduce((total, item) => total + item.quantity, 0);
+}
 
 export const useCartStore = create<CartStore>()(
   persist(cartStoreApi, {
