@@ -12,19 +12,12 @@ type CartStoreActions = {
   addProductToCart: (product: CartProduct) => void;
   updateProductQuantity: (product: CartProduct, quantity: number) => void;
   removeProductFromCart: (product: CartProduct) => void;
-  getSummaryInformation: () => {
-    itemsInCart: number;
-    subsTotal: number;
-    taxes: number;
-    total: number;
-  };
 };
 
 type CartStore = CartStoreState & CartStoreActions;
 
 const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
   cart: [],
-  totalItems: 0,
   _hasHydrated: false,
 
   setHasHydrated: (state) => {
@@ -77,25 +70,6 @@ const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
     );
 
     set({ cart: updatedCart });
-  },
-
-  getSummaryInformation: () => {
-    const { cart } = get();
-    const itemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
-
-    const subsTotal = cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0,
-    );
-    const taxes = subsTotal * 0.15;
-    const total = subsTotal + taxes;
-
-    return {
-      itemsInCart,
-      subsTotal,
-      taxes,
-      total,
-    };
   },
 });
 

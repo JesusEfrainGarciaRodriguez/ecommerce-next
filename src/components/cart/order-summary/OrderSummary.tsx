@@ -1,13 +1,21 @@
 "use client";
 import { useCartStore } from "@/store";
-import { useShallow } from "zustand/shallow";
 import { currencyFormat } from '../../../utils/currencyFormat';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCartSummary } from "@/hooks/useCartSummary";
 
 export const OrderSummary = () => {
-  const { itemsInCart, subsTotal, taxes, total } = useCartStore(
-    useShallow((state) => state.getSummaryInformation()),
-  );
+  const router = useRouter();
+  const { itemsInCart, subsTotal, taxes, total } = useCartSummary();
   const hasHydrated = useCartStore((state) => state._hasHydrated);
+
+  
+  useEffect(() => {
+    if (hasHydrated && itemsInCart === 0) {
+      router.replace("/empty");
+    }
+  }, [hasHydrated, itemsInCart, router]);
 
   if (!hasHydrated) {
     return <p>Loading...</p>;
