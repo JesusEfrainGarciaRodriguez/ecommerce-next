@@ -1,7 +1,6 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { BetterAuthError } from "better-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -30,8 +29,6 @@ export async function login(
       },
       headers: await headers(),
     });
-
-    redirect("/dashboard");
   } catch (error) {
     console.error(error);
 
@@ -48,6 +45,8 @@ export async function login(
 
     return { error: "Error inesperado" };
   }
+  
+  redirect("/");
 }
 
 
