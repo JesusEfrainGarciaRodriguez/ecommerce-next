@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { BetterAuthError } from "better-auth";
+import { APIError } from "better-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -45,8 +45,8 @@ export async function signUp(
   } catch (error: unknown) {
     console.error("Error creating account:", error);
 
-    if (error instanceof BetterAuthError) {
-      if (error.message.includes("already exists")) {
+    if (error instanceof APIError) {
+      if (error.statusCode === 422) {
         return { error: "El usuario ya existe" };
       }
 

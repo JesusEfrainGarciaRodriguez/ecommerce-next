@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { APIError } from "better-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -25,17 +26,14 @@ export async function login(
         email,
         password,
         rememberMe: true,
-        callbackURL: "/dashboard",
       },
       headers: await headers(),
     });
   } catch (error) {
     console.error(error);
 
-    if (error instanceof Error) {
-      const err = error as { statusCode?: number };
-
-      switch (err.statusCode) {
+    if (error instanceof APIError) {
+      switch (error.statusCode) {
         case 401:
           return { error: "Correo o contraseña incorrectos" };
         default:
