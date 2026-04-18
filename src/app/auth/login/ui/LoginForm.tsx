@@ -2,14 +2,22 @@
 import { login } from "@/actions";
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { ButtonSubmit } from "./ButtonSubmit";
 
 export const LoginForm = () => {
   const [state, action] = useActionState(login, undefined);
 
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
   return (
     <form action={action} className="flex flex-col">
-      {state?.error && <p className="text-red-500 mt-2">{state.error}</p>}
+      {state?.error && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"
+          role="alert"
+        >
+          <span className="block sm:inline">{state.error}</span>
+        </div>
+      )}
       <label htmlFor="email">Correo electrónico</label>
       <input
         name="email"
@@ -25,9 +33,7 @@ export const LoginForm = () => {
         type="password"
       />
 
-      <button type="submit" className="btn-primary">
-        Ingresar
-      </button>
+      <ButtonSubmit />
 
       <div className="flex items-center my-5">
         <div className="flex-1 border-t border-gray-500"></div>

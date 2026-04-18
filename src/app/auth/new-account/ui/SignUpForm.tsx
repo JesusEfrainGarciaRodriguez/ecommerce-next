@@ -2,6 +2,7 @@
 import { signUp } from "@/actions";
 import Link from "next/link";
 import { useActionState } from "react";
+import { ButtonSubmit } from "./ButtonSubmit";
 
 export const SignUpForm = () => {
   const [state, action] = useActionState(signUp, { error: null });
@@ -30,9 +31,7 @@ export const SignUpForm = () => {
         type="password"
       />
 
-      <button type="submit" className="btn-primary">
-        Crear cuenta
-      </button>
+      <ButtonSubmit />
 
       <div className="flex items-center my-5">
         <div className="flex-1 border-t border-gray-500"></div>
