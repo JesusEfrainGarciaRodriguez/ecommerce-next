@@ -14,6 +14,7 @@ import {
 
 import { useUIStore } from "@/store";
 import { SidebarLink } from "./SidebarLink";
+import { logout } from "@/actions";
 
 export const Sidebar = () => {
   const isSideMenuOpen = useUIStore((state) => state.isSideMenuOpen);
@@ -61,7 +62,7 @@ export const Sidebar = () => {
 
         {/* Menú */}
         <SidebarLink
-          href={"/"}
+          href={"/profile"}
           icon={<IoPersonOutline size={30} />}
           name={"Perfil"}
         />
@@ -73,15 +74,16 @@ export const Sidebar = () => {
         />
 
         <SidebarLink
-          href={"/"}
+          href={"/auth/login"}
           icon={<IoLogInOutline size={30} />}
           name={"Ingresar"}
         />
 
         <SidebarLink
-          href={"/"}
           icon={<IoLogOutOutline size={30} />}
           name={"Salir"}
+          type="button"
+          onClick={() => logout()}
         />
 
         <div className="w-full h-px bg-gray-200 my-10" />
