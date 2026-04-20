@@ -1,13 +1,24 @@
 "use client";
 import { login } from "@/actions";
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { ButtonSubmit } from "./ButtonSubmit";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export const LoginForm = () => {
+  const router = useRouter();
+  const { refetch } = authClient.useSession();
   const [state, action] = useActionState(login, undefined);
-
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (state?.success) {
+      refetch();
+      router.replace("/");
+    }
+  }, [state?.success, router, refetch]);
+  
   return (
     <form action={action} className="flex flex-col">
       {state?.error && (

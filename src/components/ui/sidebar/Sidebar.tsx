@@ -15,10 +15,20 @@ import {
 import { useUIStore } from "@/store";
 import { SidebarLink } from "./SidebarLink";
 import { logout } from "@/actions";
+import { authClient } from "@/lib/auth-client";
 
 export const Sidebar = () => {
   const isSideMenuOpen = useUIStore((state) => state.isSideMenuOpen);
   const closeMenu = useUIStore((state) => state.closeSideMenu);
+  const { data: session, isPending, refetch } = authClient.useSession();
+
+  const isAuthenticated = !!session;
+  const isAdmin = session?.user?.role === "admin";
+
+  const handleLogout = async () => {
+    await logout();
+    await refetch();
+  }
 
   return (
     <div>
@@ -61,50 +71,60 @@ export const Sidebar = () => {
         </div>
 
         {/* Menú */}
-        <SidebarLink
-          href={"/profile"}
-          icon={<IoPersonOutline size={30} />}
-          name={"Perfil"}
-        />
+        {!isAuthenticated && !isPending && (
+          <SidebarLink
+            href={"/auth/login"}
+            icon={<IoLogInOutline size={30} />}
+            name={"Ingresar"}
+          />
+        )}
 
-        <SidebarLink
-          href={"/"}
-          icon={<IoTicketOutline size={30} />}
-          name={"Ordenes"}
-        />
+        {isAuthenticated && (
+          <>
+            <SidebarLink
+              href={"/profile"}
+              icon={<IoPersonOutline size={30} />}
+              name={"Perfil"}
+            />
 
-        <SidebarLink
-          href={"/auth/login"}
-          icon={<IoLogInOutline size={30} />}
-          name={"Ingresar"}
-        />
+            <SidebarLink
+              href={"/"}
+              icon={<IoTicketOutline size={30} />}
+              name={"Ordenes"}
+            />
 
-        <SidebarLink
-          icon={<IoLogOutOutline size={30} />}
-          name={"Salir"}
-          type="button"
-          onClick={() => logout()}
-        />
+            <SidebarLink
+              icon={<IoLogOutOutline size={30} />}
+              name={"Salir"}
+              type="button"
+              onClick={() => handleLogout()}
+            />
+          </>
+        )}
 
-        <div className="w-full h-px bg-gray-200 my-10" />
+        {isAdmin && (
+          <>
+            <div className="w-full h-px bg-gray-200 my-10" />
 
-        <SidebarLink
-          href={"/"}
-          icon={<IoShirtOutline size={30} />}
-          name={"Productos"}
-        />
+            <SidebarLink
+              href={"/"}
+              icon={<IoShirtOutline size={30} />}
+              name={"Productos"}
+            />
 
-        <SidebarLink
-          href={"/"}
-          icon={<IoTicketOutline size={30} />}
-          name={"Ordenes"}
-        />
+            <SidebarLink
+              href={"/"}
+              icon={<IoTicketOutline size={30} />}
+              name={"Ordenes"}
+            />
 
-        <SidebarLink
-          href={"/"}
-          icon={<IoPeopleOutline size={30} />}
-          name={"Usuarios"}
-        />
+            <SidebarLink
+              href={"/"}
+              icon={<IoPeopleOutline size={30} />}
+              name={"Usuarios"}
+            />
+          </>
+        )}
       </nav>
     </div>
   );
