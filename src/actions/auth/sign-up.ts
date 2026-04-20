@@ -3,16 +3,16 @@
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
-type SignUpState = {
-  error: string | null;
-};
+interface SignUpState {
+  success?: boolean;
+  error?: string;
+}
 
 export async function signUp(
-  prevState: SignUpState,
+  prevState: SignUpState | undefined | void,
   formData: FormData,
-): Promise<SignUpState> {
+): Promise<SignUpState & { success?: boolean }> {
   const name = formData.get("name");
   const email = formData.get("email");
   const password = formData.get("password");
@@ -42,20 +42,16 @@ export async function signUp(
       },
       headers: await headers(),
     });
-  } catch (error: unknown) {
-    console.error("Error creating account:", error);
 
+    return { success: true };
+  } catch (error: unknown) {
     if (error instanceof APIError) {
       if (error.statusCode === 422) {
         return { error: "El usuario ya existe" };
       }
-
       return { error: error.message };
     }
 
-    return {
-      error: "No se pudo crear la cuenta",
-    };
+    return { error: "No se pudo crear la cuenta" };
   }
-  redirect("/");
 }

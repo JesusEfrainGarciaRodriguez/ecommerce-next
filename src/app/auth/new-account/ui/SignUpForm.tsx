@@ -1,14 +1,26 @@
 "use client";
 import { signUp } from "@/actions";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { ButtonSubmit } from "./ButtonSubmit";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export const SignUpForm = () => {
-  const [state, action] = useActionState(signUp, { error: null });
+  const router = useRouter();
+  const { refetch } = authClient.useSession();
+  const [state, action] = useActionState(signUp, undefined);
+
+  useEffect(() => {
+    if (state?.success) {
+      refetch();
+      router.replace("/");
+    }
+  }, [state?.success, router, refetch]);
+
   return (
     <form action={action} className="flex flex-col">
-        {state?.error && <p className="text-red-500 mt-2">{state.error}</p>}
+      {state?.error && <p className="text-red-500 mt-2">{state.error}</p>}
 
       <label htmlFor="email">Nombre completo</label>
       <input
