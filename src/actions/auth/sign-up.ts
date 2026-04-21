@@ -9,13 +9,15 @@ interface SignUpState {
   error?: string;
 }
 
-export async function signUp(
-  prevState: SignUpState | undefined | void,
-  formData: FormData,
-): Promise<SignUpState & { success?: boolean }> {
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const password = formData.get("password");
+export async function signUp({
+  name,
+  email,
+  password,
+}: {
+  name: string;
+  email: string;
+  password: string;
+}): Promise<SignUpState> {
 
   if (
     typeof email !== "string" ||

@@ -1,47 +1,110 @@
 "use client";
 import { signUp } from "@/actions";
 import Link from "next/link";
-import { useActionState, useEffect } from "react";
+import { useState } from "react";
 import { ButtonSubmit } from "./ButtonSubmit";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { useForm, SubmitHandler } from "react-hook-form";
+import clsx from "clsx";
+
+type FormInputs = {
+  name: string;
+  email: string;
+  password: string;
+};
 
 export const SignUpForm = () => {
   const router = useRouter();
   const { refetch } = authClient.useSession();
-  const [state, action] = useActionState(signUp, undefined);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInputs>();
 
-  useEffect(() => {
-    if (state?.success) {
-      refetch();
-      router.replace("/");
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    const { name, email, password } = data;
+
+    try {
+      const result = await signUp({ name, email, password });
+      console.log("Sign-up result:", result);
+      if (result.success) {
+        setErrorMessage(null);
+        refetch();
+        router.replace("/");
+      } else {
+        setErrorMessage(result.error || "Error desconocido al crear la cuenta");
+      }
+    } catch (error) {
+      console.error("Error during sign-up:", error);
+      setErrorMessage("Error al crear la cuenta. Por favor, inténtalo de nuevo.");
     }
-  }, [state?.success, router, refetch]);
+  };
 
   return (
-    <form action={action} className="flex flex-col">
-      {state?.error && <p className="text-red-500 mt-2">{state.error}</p>}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+      {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
 
-      <label htmlFor="email">Nombre completo</label>
-      <input
-        name="name"
-        className="px-5 py-2 border bg-gray-200 rounded mb-5"
-        type="text"
-      />
+      <div className="flex flex-col mb-5">
+        <label htmlFor="email">Nombre completo</label>
+        <input
+          {...register("name", { required: "El nombre es requerido" })}
+          className={clsx(
+            "px-5 py-2 border bg-gray-200 rounded",
+            errors.name && "border-red-500",
+          )}
+          type="text"
+          autoFocus
+        />
+        {errors.name && (
+          <span className="text-red-500 animate-error">
+            {errors.name.message}
+          </span>
+        )}
+      </div>
 
-      <label htmlFor="email">Correo electrónico</label>
-      <input
-        name="email"
-        className="px-5 py-2 border bg-gray-200 rounded mb-5"
-        type="email"
-      />
+      <div className="flex flex-col mb-5">
+        <label htmlFor="email">Correo electrónico</label>
+        <input
+          {...register("email", {
+            required: "El correo electrónico es requerido",
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: "Correo electrónico no válido",
+            },
+          })}
+          className={clsx(
+            "px-5 py-2 border bg-gray-200 rounded",
+            errors.email && "border-red-500",
+          )}
+          type="email"
+        />
+        {errors.email && (
+          <span className="text-red-500 animate-error">
+            {errors.email.message}
+          </span>
+        )}
+      </div>
 
-      <label htmlFor="email">Contraseña</label>
-      <input
-        name="password"
-        className="px-5 py-2 border bg-gray-200 rounded mb-5"
-        type="password"
-      />
+      <div className="flex flex-col mb-5">
+        <label htmlFor="email">Contraseña</label>
+        <input
+          {...register("password", { required: "La contraseña es requerida" })}
+          className={clsx(
+            "px-5 py-2 border bg-gray-200 rounded",
+            errors.password && "border-red-500",
+          )}
+          type="password"
+        />
+
+        {errors.password && (
+          <span className="text-red-500 animate-error">
+            {errors.password.message}
+          </span>
+        )}
+      </div>
 
       <ButtonSubmit />
 
