@@ -131,3 +131,8 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+model Country {
+  id   String @id
+  name String
+}

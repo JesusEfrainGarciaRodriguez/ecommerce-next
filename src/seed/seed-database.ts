@@ -2,6 +2,7 @@ import "dotenv/config";
 import prisma from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import { initialData } from "./seed";
+import { countries } from "./seed-countries";
 
 async function main() {
   console.log("🌱 Seeding users...");
@@ -80,6 +81,12 @@ async function main() {
 
     console.log(`✅ Producto listo: ${product.title}`);
   }
+
+  // Paises
+  await prisma.country.createMany({
+    data: countries,
+  });
+  console.log(`✅ Paises listos: ${countries.length}`);
 
   console.log("🌱 Seed terminado");
 }
