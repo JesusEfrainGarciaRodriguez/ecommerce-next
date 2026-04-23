@@ -6,3 +6,5 @@ export * from "./product/get-stock-by-slug"
 export * from "./auth/login"
 export * from "./auth/sign-up"
 export * from "./auth/logout"
+
+export * from "./country/get-countries"
