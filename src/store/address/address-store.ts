@@ -10,14 +10,11 @@ type AddressStoreState = {
     postalCode: string;
     city: string;
     country: string;
-    state: string;
     phone: string;
   };
-  _hasHydrated: boolean;
 };
 
 type AddressStoreActions = {
-  setHasHydrated: (state: boolean) => void;
   setAddress: (address: AddressStoreState["address"]) => void;
 };
 
@@ -32,15 +29,7 @@ const addressStoreApi: StateCreator<AddressStore> = (set) => ({
     postalCode: "",
     city: "",
     country: "",
-    state: "",
     phone: "",
-  },
-  _hasHydrated: false,
-
-  setHasHydrated: (state) => {
-    set({
-      _hasHydrated: state,
-    });
   },
 
   setAddress: (address) => {
@@ -53,8 +42,5 @@ const addressStoreApi: StateCreator<AddressStore> = (set) => ({
 export const useAddressStore = create<AddressStore>()(
   persist(addressStoreApi, {
     name: "address-storage",
-    onRehydrateStorage: (state) => {
-      return () => state.setHasHydrated(true);
-    },
   }),
 );

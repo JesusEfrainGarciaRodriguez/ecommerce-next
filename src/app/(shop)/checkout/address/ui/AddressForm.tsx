@@ -1,7 +1,9 @@
 "use client";
 
 import { Country } from "@/interfaces";
+import { useAddressStore } from "@/store";
 import clsx from "clsx";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type FormInputs = {
@@ -25,11 +27,23 @@ export const AddressForm = ({ countries }: Props) => {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    reset,
   } = useForm<FormInputs>();
+  const setAddress = useAddressStore(state => state.setAddress);
+  const address = useAddressStore(state => state.address);
 
   const onSubmit = (data: FormInputs) => {
-    console.log(data);
-  };
+    setAddress(data);
+  }
+
+  useEffect(() => {
+    if (!address.firstName) return;
+    reset({
+      ...address,
+      rememberAddress: false,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <form
