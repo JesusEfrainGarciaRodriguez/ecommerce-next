@@ -8,3 +8,5 @@ export * from "./auth/sign-up"
 export * from "./auth/logout"
 
 export * from "./country/get-countries"
+
+export * from "./address/set-user-address"

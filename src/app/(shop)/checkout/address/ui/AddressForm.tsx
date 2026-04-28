@@ -5,6 +5,8 @@ import { useAddressStore } from "@/store";
 import clsx from "clsx";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { setUserAddress } from "@/actions";
+import { authClient } from "@/lib/auth-client";
 
 type FormInputs = {
   firstName: string;
@@ -29,12 +31,20 @@ export const AddressForm = ({ countries }: Props) => {
     formState: { errors, isValid },
     reset,
   } = useForm<FormInputs>();
-  const setAddress = useAddressStore(state => state.setAddress);
-  const address = useAddressStore(state => state.address);
+  const setAddress = useAddressStore((state) => state.setAddress);
+  const address = useAddressStore((state) => state.address);
+
+  const { data } = authClient.useSession();
+  const userId = data?.user?.id;
 
   const onSubmit = (data: FormInputs) => {
     setAddress(data);
-  }
+    const { rememberAddress, ...addressData } = data;
+
+    if (data.rememberAddress) {
+      setUserAddress(addressData, userId!);
+    }
+  };
 
   useEffect(() => {
     if (!address.firstName) return;
@@ -42,7 +52,7 @@ export const AddressForm = ({ countries }: Props) => {
       ...address,
       rememberAddress: false,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -218,10 +228,7 @@ export const AddressForm = ({ countries }: Props) => {
         </div>
         <button
           type="submit"
-          className={clsx(
-            "btn-primary",
-            !isValid && "btn-disabled",
-          )}
+          className={clsx("btn-primary", !isValid && "btn-disabled")}
         >
           Siguiente
         </button>
