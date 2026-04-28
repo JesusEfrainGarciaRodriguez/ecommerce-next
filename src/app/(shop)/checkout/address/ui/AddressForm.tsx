@@ -1,12 +1,13 @@
 "use client";
 
-import { Country } from "@/interfaces";
+import { Address, Country } from "@/interfaces";
 import { useAddressStore } from "@/store";
 import clsx from "clsx";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { deleteUserAddress, setUserAddress } from "@/actions";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 type FormInputs = {
   firstName: string;
@@ -22,31 +23,37 @@ type FormInputs = {
 
 interface Props {
   countries: Country[];
+  userStoreAddress?: Partial<Address>;
 }
 
-export const AddressForm = ({ countries }: Props) => {
+export const AddressForm = ({ countries, userStoreAddress = {} }: Props) => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
     reset,
-  } = useForm<FormInputs>();
+  } = useForm<FormInputs>({
+    defaultValues: { ...userStoreAddress, rememberAddress: false },
+  });
+
   const setAddress = useAddressStore((state) => state.setAddress);
   const address = useAddressStore((state) => state.address);
 
   const { data } = authClient.useSession();
   const userId = data?.user?.id;
 
-  const onSubmit = (data: FormInputs) => {
+  const onSubmit = async(data: FormInputs) => {
     setAddress(data);
     const { rememberAddress, ...addressData } = data;
 
     if (data.rememberAddress) {
-      setUserAddress(addressData, userId!);
+      await setUserAddress(addressData, userId!);
     } else {
-      deleteUserAddress(userId!);
+      await deleteUserAddress(userId!);
     }
 
+    router.push("/checkout");
   };
 
   useEffect(() => {
