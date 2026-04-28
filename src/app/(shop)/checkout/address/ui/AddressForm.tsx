@@ -5,7 +5,7 @@ import { useAddressStore } from "@/store";
 import clsx from "clsx";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { setUserAddress } from "@/actions";
+import { deleteUserAddress, setUserAddress } from "@/actions";
 import { authClient } from "@/lib/auth-client";
 
 type FormInputs = {
@@ -43,7 +43,10 @@ export const AddressForm = ({ countries }: Props) => {
 
     if (data.rememberAddress) {
       setUserAddress(addressData, userId!);
+    } else {
+      deleteUserAddress(userId!);
     }
+
   };
 
   useEffect(() => {
