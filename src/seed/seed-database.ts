@@ -8,12 +8,14 @@ async function main() {
   console.log("🌱 Seeding users...");
 
   await Promise.all([
+    prisma.userAddress.deleteMany(),
     prisma.account.deleteMany(),
     prisma.session.deleteMany(),
     prisma.user.deleteMany(),
     prisma.productImage.deleteMany(),
     prisma.product.deleteMany(),
     prisma.category.deleteMany(),
+    prisma.country.deleteMany(),
   ]);
 
   const { categories, products, users } = initialData;
