@@ -8,6 +8,9 @@ async function main() {
   console.log("🌱 Seeding users...");
 
   await Promise.all([
+    prisma.orderAddress.deleteMany(),
+    prisma.orderItem.deleteMany(),
+    prisma.order.deleteMany(),
     prisma.userAddress.deleteMany(),
     prisma.account.deleteMany(),
     prisma.session.deleteMany(),
