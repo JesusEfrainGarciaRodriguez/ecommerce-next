@@ -1,15 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import { useCartSummary } from "@/hooks/useCartSummary";
 import { useAddressStore, useCartStore } from "@/store";
+import clsx from "clsx";
 
 export const PlaceOrder = () => {
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+
   const hasHydrated = useCartStore((state) => state._hasHydrated);
   const address = useAddressStore((state) => state.address);
   const { itemsInCart, subsTotal, taxes, total } = useCartSummary();
+  const cart = useCartStore((state) => state.cart);
 
   if (!hasHydrated) {
     return <p>Loading...</p>;
+  }
+
+  const handlePlaceOrder = async () => {
+    setIsPlacingOrder(true);
+
+    const productsToOrder = cart.map((product) => ({
+      productId: product.id,
+      size: product.size,
+      quantity: product.quantity,
+    }));
+
+    // TODO: Implementar lógica para enviar la orden al backend
+
+    setIsPlacingOrder(false);
   }
 
   return (
@@ -64,8 +83,15 @@ export const PlaceOrder = () => {
           </span>
         </p>
 
-        <button className="flex btn-primary justify-center">
-          Colocar orden
+        <button 
+          className={clsx({
+            "btn-primary": !isPlacingOrder,
+            "btn-disabled": isPlacingOrder
+          })}
+          onClick={handlePlaceOrder}
+          disabled={isPlacingOrder}
+        >
+          {isPlacingOrder ? "Procesando..." : "Colocar orden"}
         </button>
       </div>
     </div>
