@@ -76,7 +76,18 @@ export const placeOrder = async (
     }
 
     // Crear dirección de envío
+    const { country, ...addressWithoutCountry } = address;
+    const orderAddress = await tx.orderAddress.create({
+      data: {
+        orderId: order.id,
+        ...addressWithoutCountry,
+        countryId: country,
+      },
+    });
 
-    return order;
+    return {
+        order: order,
+        orderAddress: orderAddress
+    };
   });
 };
