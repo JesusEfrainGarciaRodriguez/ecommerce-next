@@ -30,7 +30,7 @@ export const placeOrder = async (
 
   const itemsInOrder = productIds.reduce((acc, p) => acc + p.quantity, 0);
 
-  const { subTotal, taxes, total } = productIds.reduce(
+  const { subTotal, tax, total } = productIds.reduce(
     (totals, p) => {
       const product = products.find((prod) => prod.id === p.productId);
       if (!product) {
@@ -40,15 +40,43 @@ export const placeOrder = async (
       const subTotal = product.price * p.quantity;
 
       totals.subTotal += subTotal;
-      totals.taxes += subTotal * 0.16;
+      totals.tax += subTotal * 0.16;
       totals.total += subTotal * 1.16;
 
       return totals;
     },
-    { subTotal: 0, taxes: 0, total: 0 },
+    { subTotal: 0, tax: 0, total: 0 },
   );
 
-  console.log({ subTotal, taxes, total });
+  const prismaTx = await prisma.$transaction(async (tx) => {
+    // Actualizar stock de productos
 
-  //TODO: Implementar lógica para guardar la orden en la base de datos
+    // Crear orden
+    const order = await tx.order.create({
+      data: {
+        userId,
+        itemsInOrder,
+        subTotal,
+        tax,
+        total,
+        orderItems: {
+          create: productIds.map((p) => ({
+            productId: p.productId,
+            quantity: p.quantity,
+            size: p.size,
+            price: products.find((prod) => prod.id === p.productId)?.price || 0,
+          })),
+        },
+      },
+    });
+
+    // Validar si el price es cero y lanzar error para hacer rollback
+    if (order.total === 0) {
+      throw new Error("Order total cannot be zero");
+    }
+
+    // Crear dirección de envío
+
+    return order;
+  });
 };
