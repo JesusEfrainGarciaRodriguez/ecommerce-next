@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useCartSummary } from "@/hooks/useCartSummary";
 import { useAddressStore, useCartStore } from "@/store";
 import clsx from "clsx";
+import { placeOrder } from "@/actions";
 
 export const PlaceOrder = () => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -27,7 +28,8 @@ export const PlaceOrder = () => {
     }));
 
     // TODO: Implementar lógica para enviar la orden al backend
-
+    const response = await placeOrder(productsToOrder, address);
+    console.log("Order response:", response);
     setIsPlacingOrder(false);
   }
 

@@ -8,7 +8,7 @@ export const getCartSummary = (cart: CartProduct[]) => {
     0,
   );
 
-  const taxes = subsTotal * 0.15;
+  const taxes = subsTotal * 0.16;
   const total = subsTotal + taxes;
 
   return {
