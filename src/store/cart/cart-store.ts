@@ -12,6 +12,7 @@ type CartStoreActions = {
   addProductToCart: (product: CartProduct) => void;
   updateProductQuantity: (product: CartProduct, quantity: number) => void;
   removeProductFromCart: (product: CartProduct) => void;
+  clearCart: () => void;
 };
 
 type CartStore = CartStoreState & CartStoreActions;
@@ -70,6 +71,10 @@ const cartStoreApi: StateCreator<CartStore> = (set, get) => ({
     );
 
     set({ cart: updatedCart });
+  },
+
+  clearCart: () => {
+    set({cart: []})
   },
 });
 

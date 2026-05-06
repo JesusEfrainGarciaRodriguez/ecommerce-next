@@ -5,14 +5,18 @@ import { useCartSummary } from "@/hooks/useCartSummary";
 import { useAddressStore, useCartStore } from "@/store";
 import clsx from "clsx";
 import { placeOrder } from "@/actions";
+import { useRouter } from "next/navigation";
 
 export const PlaceOrder = () => {
+  const router = useRouter();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const hasHydrated = useCartStore((state) => state._hasHydrated);
   const address = useAddressStore((state) => state.address);
   const { itemsInCart, subsTotal, taxes, total } = useCartSummary();
   const cart = useCartStore((state) => state.cart);
+  const clearCart = useCartStore((state) => state.clearCart);
 
   if (!hasHydrated) {
     return <p>Loading...</p>;
@@ -27,10 +31,15 @@ export const PlaceOrder = () => {
       quantity: product.quantity,
     }));
 
-    // TODO: Implementar lógica para enviar la orden al backend
     const response = await placeOrder(productsToOrder, address);
-    console.log("Order response:", response);
-    setIsPlacingOrder(false);
+    if ( !response.ok) {
+      setIsPlacingOrder(false);
+      setErrorMessage(response?.message ?? "Error al colocar la orden")
+      return
+    }
+
+    clearCart();
+    router.replace("/orders/" + response.order?.id)
   }
 
   return (
@@ -84,6 +93,8 @@ export const PlaceOrder = () => {
             </a>
           </span>
         </p>
+        
+        <p className="text-red-500">{errorMessage}</p>
 
         <button 
           className={clsx({
