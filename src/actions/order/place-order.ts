@@ -48,46 +48,89 @@ export const placeOrder = async (
     { subTotal: 0, tax: 0, total: 0 },
   );
 
-  const prismaTx = await prisma.$transaction(async (tx) => {
-    // Actualizar stock de productos
+  try {
+    const prismaTx = await prisma.$transaction(async (tx) => {
+      // Actualizar stock de productos
+      const updatedProductsPromises = products.map(async (product) => {
+        // Acumular valores
+        const productQuantity = productIds
+          .filter((p) => p.productId === product.id)
+          .reduce((acc, item) => item.quantity + acc, 0);
 
-    // Crear orden
-    const order = await tx.order.create({
-      data: {
-        userId,
-        itemsInOrder,
-        subTotal,
-        tax,
-        total,
-        orderItems: {
-          create: productIds.map((p) => ({
-            productId: p.productId,
-            quantity: p.quantity,
-            size: p.size,
-            price: products.find((prod) => prod.id === p.productId)?.price || 0,
-          })),
+        if (productQuantity === 0) {
+          throw new Error(`${product.id} no tiene la cantidad definida`);
+        }
+
+        return tx.product.update({
+          where: { id: product.id },
+          data: {
+            inStock: {
+              decrement: productQuantity,
+            },
+          },
+        });
+      });
+
+      const updatedProducts = await Promise.all(updatedProductsPromises);
+
+      // Verificar valores negativos en la existencia = no hay stock
+      updatedProducts.forEach((product) => {
+        if (product.inStock < 0) {
+          throw new Error(`${product.title} no tiene inventario suficiente`);
+        }
+      });
+
+      // Crear orden
+      const order = await tx.order.create({
+        data: {
+          userId,
+          itemsInOrder,
+          subTotal,
+          tax,
+          total,
+          orderItems: {
+            create: productIds.map((p) => ({
+              productId: p.productId,
+              quantity: p.quantity,
+              size: p.size,
+              price:
+                products.find((prod) => prod.id === p.productId)?.price || 0,
+            })),
+          },
         },
-      },
-    });
+      });
 
-    // Validar si el price es cero y lanzar error para hacer rollback
-    if (order.total === 0) {
-      throw new Error("Order total cannot be zero");
-    }
+      // Validar si el price es cero y lanzar error para hacer rollback
+      if (order.total === 0) {
+        throw new Error("Order total cannot be zero");
+      }
 
-    // Crear dirección de envío
-    const { country, ...addressWithoutCountry } = address;
-    const orderAddress = await tx.orderAddress.create({
-      data: {
-        orderId: order.id,
-        ...addressWithoutCountry,
-        countryId: country,
-      },
+      // Crear dirección de envío
+      const { country, ...addressWithoutCountry } = address;
+      const orderAddress = await tx.orderAddress.create({
+        data: {
+          ...addressWithoutCountry,
+          countryId: country,
+          orderId: order.id,
+        },
+      });
+
+      return {
+        updatedProducts: updatedProducts,
+        order: order,
+        orderAddress: orderAddress,
+      };
     });
 
     return {
-        order: order,
-        orderAddress: orderAddress
+      ok: true,
+      order: prismaTx.order,
+      prismaTx,
     };
-  });
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "An error occurred",
+    };
+  }
 };
