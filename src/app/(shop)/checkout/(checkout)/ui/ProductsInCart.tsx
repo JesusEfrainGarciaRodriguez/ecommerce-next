@@ -3,6 +3,7 @@
 import { useCartStore } from "@/store/cart/cart-store";
 import { currencyFormat } from "@/utils";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 export const ProductsInCart = () => {
   const products = useCartStore((state) => state.cart);
@@ -10,6 +11,10 @@ export const ProductsInCart = () => {
 
   if (!hasHydrated) {
     return <p>Loading...</p>
+  }
+
+  if (products.length <= 0){
+    redirect("/")
   }
   
   return (
