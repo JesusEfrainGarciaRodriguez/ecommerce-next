@@ -3,7 +3,15 @@
 import { getSession } from "@/lib/get-session";
 import prisma from "@/lib/prisma";
 
-export const getOrdersByUser = async () => {
+interface PaginationOptions {
+  page?: number;
+  take?: number;
+}
+
+export const getOrdersByUser = async ({
+  page = 1,
+  take = 5,
+}: PaginationOptions) => {
   const session = await getSession();
 
   const userId = session?.user?.id;
@@ -11,22 +19,35 @@ export const getOrdersByUser = async () => {
     throw new Error("User not authenticated");
   }
 
-  const orders = await prisma.order.findMany({
-    where: {
-      userId,
-    },
-    include: {
-      orderAddress: {
-        select: {
-          firstName: true,
-          lastName: true,
+  const [totalOrders, orders] = await Promise.all([
+    prisma.order.count({
+      where: {
+        userId,
+      },
+    }),
+    prisma.order.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        orderAddress: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
         },
       },
-    },
-  });
+      take,
+      skip: (page - 1) * take,
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalOrders / take)
 
   return {
     ok: true,
-    orders: orders,
+    orders,
+    totalOrders,
+    totalPages,
   };
 };

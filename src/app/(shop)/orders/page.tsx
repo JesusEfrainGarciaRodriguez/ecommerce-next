@@ -1,12 +1,18 @@
 import { getOrdersByUser } from "@/actions";
-import { Title } from "@/components";
+import { Pagination, Title } from "@/components";
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IoCardOutline } from "react-icons/io5";
 
-export default async function OrdersPage() {
-  const { ok, orders } = await getOrdersByUser();
+interface Params {
+  searchParams: Promise<{ page?: string }>
+}
+
+export default async function OrdersPage({searchParams}: Params) {
+  const params = await searchParams;
+  const page = params.page ? parseInt(params.page) : 1;
+  const { ok, orders, totalPages } = await getOrdersByUser({page});
 
   if (!ok) {
     redirect("/auth/login");
@@ -86,6 +92,7 @@ export default async function OrdersPage() {
           </tbody>
         </table>
       </div>
+      <Pagination totalPages={totalPages}/>
     </>
   );
 }
