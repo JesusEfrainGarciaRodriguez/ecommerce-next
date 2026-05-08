@@ -88,7 +88,7 @@ export const Sidebar = () => {
             />
 
             <SidebarLink
-              href={"/"}
+              href={"/orders"}
               icon={<IoTicketOutline size={30} />}
               name={"Ordenes"}
             />
