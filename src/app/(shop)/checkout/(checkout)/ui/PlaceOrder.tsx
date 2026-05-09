@@ -6,6 +6,7 @@ import { useAddressStore, useCartStore } from "@/store";
 import clsx from "clsx";
 import { placeOrder } from "@/actions";
 import { useRouter } from "next/navigation";
+import { PaypalButton } from "@/components";
 
 export const PlaceOrder = () => {
   const router = useRouter();
@@ -32,15 +33,15 @@ export const PlaceOrder = () => {
     }));
 
     const response = await placeOrder(productsToOrder, address);
-    if ( !response.ok) {
+    if (!response.ok) {
       setIsPlacingOrder(false);
-      setErrorMessage(response?.message ?? "Error al colocar la orden")
-      return
+      setErrorMessage(response?.message ?? "Error al colocar la orden");
+      return;
     }
 
     clearCart();
-    router.replace("/orders/" + response.order?.id)
-  }
+    router.replace("/orders/" + response.order?.id);
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-xl p-7">
@@ -93,19 +94,22 @@ export const PlaceOrder = () => {
             </a>
           </span>
         </p>
-        
+
         <p className="text-red-500">{errorMessage}</p>
 
-        <button 
+        {/* <button
           className={clsx({
             "btn-primary": !isPlacingOrder,
-            "btn-disabled": isPlacingOrder
+            "btn-disabled": isPlacingOrder,
           })}
           onClick={handlePlaceOrder}
           disabled={isPlacingOrder}
         >
           {isPlacingOrder ? "Procesando..." : "Colocar orden"}
-        </button>
+        </button> */}
+        
+        <PaypalButton />
+        
       </div>
     </div>
   );

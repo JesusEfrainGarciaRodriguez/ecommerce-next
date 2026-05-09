@@ -21,3 +21,5 @@ export * from './product/add-to-cart/AddToCart';
 
 export * from './cart/products-in-cart/ProductsInCart';
 export * from './cart/order-summary/OrderSummary';
+
+export * from './paypal/PaypalButton';
