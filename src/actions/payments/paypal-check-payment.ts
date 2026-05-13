@@ -1,5 +1,7 @@
 "use server";
 
+import { PayPalOrderStatusResponse } from "@/interfaces";
+
 export const paypalCheckPayment = async (paypalTransactionId: string) => {
   try {
     const { access_token } = await getPayPalBearerToken();
@@ -7,7 +9,25 @@ export const paypalCheckPayment = async (paypalTransactionId: string) => {
       return { ok: false, message: "Error obtaining PayPal access token" };
     }
 
-    return { ok: true, access_token };
+    const verificationResponse = await verifyPayPalPayment(
+      paypalTransactionId,
+      access_token,
+    );
+    if (!verificationResponse) {
+      return { ok: false, message: "Error verifying PayPal payment" };
+    }
+
+    const { status } =
+      verificationResponse as PayPalOrderStatusResponse;
+
+    if (status !== "COMPLETED") {
+      return {
+        ok: false,
+        message: "Payment not completed. Current status: " + status,
+      };
+    }
+
+    return { ok: true };
   } catch (error) {
     console.error("Error checking PayPal payment:", error);
     return { ok: false, message: "Error checking PayPal payment" };
@@ -39,6 +59,34 @@ const getPayPalBearerToken = async () => {
 
     return resp;
   } catch (error) {
+    return null;
+  }
+};
+
+const verifyPayPalPayment = async (
+  transactionId: string,
+  accessToken: string,
+): Promise<PayPalOrderStatusResponse | null> => {
+  try {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + accessToken);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+    };
+
+    const resp = await fetch(
+      `${process.env.PAYPAL_ORDERS_URL}/${transactionId}`,
+      {
+        ...requestOptions,
+        cache: "no-store",
+      },
+    ).then((r) => r.json());
+
+    return resp;
+  } catch (error) {
+    console.error("Error verifying PayPal payment:", error);
     return null;
   }
 };
