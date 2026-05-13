@@ -1,5 +1,6 @@
 "use client";
 
+import { setTransactionId } from "@/actions";
 import {
   PayPalButtons,
   PayPalButtonsComponentProps,
@@ -12,7 +13,7 @@ interface Props {
 }
 export const PaypalButton = ({ orderId, amount }: Props) => {
   const [{ isPending }] = usePayPalScriptReducer();
-  const rountedAmount = (Math.round(amount * 100)) / 100;
+  const rountedAmount = Math.round(amount * 100) / 100;
 
   if (isPending) {
     return (
@@ -39,7 +40,12 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
         intent: "CAPTURE",
       });
 
-      console.log("Transaction ID:", transactionId);
+      const { ok } = await setTransactionId(orderId, transactionId);
+
+      if (!ok) {
+        throw new Error("Error creating PayPal order");
+      }
+
       return transactionId;
     } catch (error) {
       console.error(error);
@@ -48,10 +54,5 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
     }
   };
 
-  return (
-    <PayPalButtons
-      /* TODO: Implement createOrder function */
-      createOrder={createOrder}
-    />
-  );
+  return <PayPalButtons createOrder={createOrder} />;
 };
