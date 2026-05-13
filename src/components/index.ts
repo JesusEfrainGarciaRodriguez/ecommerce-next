@@ -23,3 +23,4 @@ export * from './cart/products-in-cart/ProductsInCart';
 export * from './cart/order-summary/OrderSummary';
 
 export * from './paypal/PaypalButton';
+export * from './providers/PaypalProvider';

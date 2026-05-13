@@ -1,16 +1,18 @@
 "use client";
 
 import {
-  INSTANCE_LOADING_STATE,
-  OnApproveDataOneTimePayments,
-  PayPalOneTimePaymentButton,
-  usePayPal,
-} from "@paypal/react-paypal-js/sdk-v6";
+  PayPalButtons,
+  PayPalButtonsComponentProps,
+  usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
 
-export const PaypalButton = () => {
-  const { loadingStatus } = usePayPal();
-
-  const isPending = loadingStatus === INSTANCE_LOADING_STATE.PENDING;
+interface Props {
+  orderId: string;
+  amount: number;
+}
+export const PaypalButton = ({ orderId, amount }: Props) => {
+  const [{ isPending }] = usePayPalScriptReducer();
+  const rountedAmount = (Math.round(amount * 100)) / 100;
 
   if (isPending) {
     return (
@@ -20,24 +22,36 @@ export const PaypalButton = () => {
     );
   }
 
+  const createOrder: PayPalButtonsComponentProps["createOrder"] = async (
+    data,
+    actions,
+  ) => {
+    try {
+      const transactionId = await actions.order.create({
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "USD",
+              value: rountedAmount.toString(),
+            },
+          },
+        ],
+        intent: "CAPTURE",
+      });
+
+      console.log("Transaction ID:", transactionId);
+      return transactionId;
+    } catch (error) {
+      console.error(error);
+
+      throw error;
+    }
+  };
+
   return (
-    <PayPalOneTimePaymentButton
-      presentationMode="auto"
+    <PayPalButtons
       /* TODO: Implement createOrder function */
-      createOrder={async () => {
-        const response = await fetch("/api/create-order", {
-          method: "POST",
-        });
-        const { orderId } = await response.json();
-        return { orderId };
-      }}
-      /* TODO: Implement onApprove function */
-      onApprove={async ({ orderId }: OnApproveDataOneTimePayments) => {
-        await fetch(`/api/capture-order/${orderId}`, {
-          method: "POST",
-        });
-        console.log("Payment captured!");
-      }}
+      createOrder={createOrder}
     />
   );
 };

@@ -6,7 +6,6 @@ import { useAddressStore, useCartStore } from "@/store";
 import clsx from "clsx";
 import { placeOrder } from "@/actions";
 import { useRouter } from "next/navigation";
-import { PaypalButton } from "@/components";
 
 export const PlaceOrder = () => {
   const router = useRouter();
@@ -97,7 +96,7 @@ export const PlaceOrder = () => {
 
         <p className="text-red-500">{errorMessage}</p>
 
-        {/* <button
+        <button
           className={clsx({
             "btn-primary": !isPlacingOrder,
             "btn-disabled": isPlacingOrder,
@@ -106,10 +105,8 @@ export const PlaceOrder = () => {
           disabled={isPlacingOrder}
         >
           {isPlacingOrder ? "Procesando..." : "Colocar orden"}
-        </button> */}
-        
-        <PaypalButton />
-        
+        </button>
+                
       </div>
     </div>
   );
