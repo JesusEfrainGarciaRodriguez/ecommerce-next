@@ -1,6 +1,6 @@
 "use client";
 
-import { setTransactionId } from "@/actions";
+import { paypalCheckPayment, setTransactionId } from "@/actions";
 import {
   PayPalButtons,
   PayPalButtonsComponentProps,
@@ -54,5 +54,20 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
     }
   };
 
-  return <PayPalButtons createOrder={createOrder} />;
+  const onApprove: PayPalButtonsComponentProps["onApprove"] = async (
+    data,
+    actions,
+  ) => {
+    try {
+      const detail = await actions.order?.capture();
+      if (!detail) return;
+
+      await paypalCheckPayment(detail.id!);
+
+    } catch (error) {
+      console.error("Error capturing PayPal order:", error);
+    }
+  };
+
+  return <PayPalButtons createOrder={createOrder} onApprove={onApprove} />;
 };
