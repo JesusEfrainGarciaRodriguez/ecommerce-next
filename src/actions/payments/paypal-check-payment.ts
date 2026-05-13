@@ -1,6 +1,8 @@
 "use server";
 
 import { PayPalOrderStatusResponse } from "@/interfaces";
+import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export const paypalCheckPayment = async (paypalTransactionId: string) => {
   try {
@@ -17,8 +19,8 @@ export const paypalCheckPayment = async (paypalTransactionId: string) => {
       return { ok: false, message: "Error verifying PayPal payment" };
     }
 
-    const { status } =
-      verificationResponse as PayPalOrderStatusResponse;
+    const { status, purchase_units } = verificationResponse as PayPalOrderStatusResponse;
+    const { invoice_id: orderId } = purchase_units[0];
 
     if (status !== "COMPLETED") {
       return {
@@ -26,6 +28,16 @@ export const paypalCheckPayment = async (paypalTransactionId: string) => {
         message: "Payment not completed. Current status: " + status,
       };
     }
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        isPaid: true,
+        paidAt: new Date(),
+      },
+    });
+
+    revalidatePath(`/orders/${orderId}`);
 
     return { ok: true };
   } catch (error) {

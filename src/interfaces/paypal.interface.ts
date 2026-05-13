@@ -48,6 +48,7 @@ export interface PurchaseUnit {
     reference_id:    string;
     amount:          Amount;
     payee:           Payee;
+    invoice_id:      string;
     soft_descriptor: string;
     shipping:        Shipping;
     payments:        Payments;
@@ -74,6 +75,7 @@ export interface Capture {
     final_capture:               boolean;
     seller_protection:           SellerProtection;
     seller_receivable_breakdown: SellerReceivableBreakdown;
+    invoice_id:                  string;
     links:                       Link[];
     create_time:                 Date;
     update_time:                 Date;
