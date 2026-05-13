@@ -24,3 +24,5 @@ export * from './cart/order-summary/OrderSummary';
 
 export * from './paypal/PaypalButton';
 export * from './providers/PaypalProvider';
+
+export * from './orders/OrderStatus';
