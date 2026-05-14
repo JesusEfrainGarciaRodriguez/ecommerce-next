@@ -107,7 +107,7 @@ export const Sidebar = () => {
             <div className="w-full h-px bg-gray-200 my-10" />
 
             <SidebarLink
-              href={"/"}
+              href={"/admin/products"}
               icon={<IoShirtOutline size={30} />}
               name={"Productos"}
             />
