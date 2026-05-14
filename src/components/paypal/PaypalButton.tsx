@@ -64,11 +64,14 @@ export const PaypalButton = ({ orderId, amount }: Props) => {
       if (!detail) return;
 
       await paypalCheckPayment(detail.id!);
-
     } catch (error) {
       console.error("Error capturing PayPal order:", error);
     }
   };
 
-  return <PayPalButtons createOrder={createOrder} onApprove={onApprove} />;
+  return (
+    <div className="relative z-0">
+      <PayPalButtons createOrder={createOrder} onApprove={onApprove} />
+    </div>
+  );
 };
