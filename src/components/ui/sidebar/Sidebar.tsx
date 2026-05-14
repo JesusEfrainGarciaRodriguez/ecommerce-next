@@ -119,7 +119,7 @@ export const Sidebar = () => {
             />
 
             <SidebarLink
-              href={"/"}
+              href={"/admin/users"}
               icon={<IoPeopleOutline size={30} />}
               name={"Usuarios"}
             />
