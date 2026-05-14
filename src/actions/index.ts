@@ -22,3 +22,4 @@ export * from "./payments/set-transaction-id"
 export * from "./payments/paypal-check-payment"
 
 export * from "./user/get-all-users"
+export * from "./user/update-user-role"

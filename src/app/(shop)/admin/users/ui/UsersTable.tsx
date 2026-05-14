@@ -1,6 +1,7 @@
 "use client";
 
-import type { User } from "@/interfaces";
+import { updateUserRole } from "@/actions";
+import { Role, User } from "@/interfaces";
 
 interface Props {
   users: User[];
@@ -46,11 +47,16 @@ export const UsersTable = ({ users }: Props) => {
             <td className="flex items-center text-sm  text-gray-900 font-light px-6 py-4 whitespace-nowrap">
               <select
                 value={user.role}
-                onChange={() => {}}
+                onChange={(e) =>
+                  updateUserRole({
+                    userId: user.id,
+                    newRole: e.target.value as typeof Role.ADMIN | typeof Role.USER,
+                  })
+                }
                 className="text-sm w-full p-2 text-gray-900"
               >
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
+                <option value={Role.ADMIN}>Admin</option>
+                <option value={Role.USER}>User</option>
               </select>
             </td>
           </tr>
