@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import {
   Category,
   CategoryType,
@@ -41,7 +41,7 @@ export const ProductForm = ({ product, categories }: Props) => {
     formState: { isValid },
     getValues,
     setValue,
-    watch,
+    control,
   } = useForm<FormInputs>({
     defaultValues: {
       ...product,
@@ -52,9 +52,31 @@ export const ProductForm = ({ product, categories }: Props) => {
     },
   });
 
+  const watchSizes = useWatch({
+    control,
+    name: "sizes",
+    defaultValue: [],
+  });
+
+  const onSizeChange = (size: string) => {
+    const currentSizes = getValues("sizes");
+    if (currentSizes.includes(size)) {
+      setValue(
+        "sizes",
+        currentSizes.filter((s) => s !== size),
+      );
+    } else {
+      setValue("sizes", [...currentSizes, size]);
+    }
+  };
+
+  const onSubmit = async (data: FormInputs) => {
+    if (!isValid) return;
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(() => {})}
+      onSubmit={handleSubmit(onSubmit)}
       className="grid px-5 mb-16 grid-cols-1 sm:px-0 sm:grid-cols-2 gap-3"
     >
       {/* Textos */}
@@ -155,11 +177,11 @@ export const ProductForm = ({ product, categories }: Props) => {
               // bg-blue-500 text-white <--- si está seleccionado
               <div
                 key={size}
-                onClick={() => {}}
+                onClick={() => onSizeChange(size)}
                 className={clsx(
                   "p-2 border cursor-pointer rounded-md mr-2 mb-2 w-14 transition-all text-center",
                   {
-                    "bg-blue-500 text-white": getValues("sizes").includes(size),
+                    "bg-blue-500 text-white": watchSizes.includes(size),
                   },
                 )}
               >
