@@ -10,7 +10,9 @@ export const getProductBySlug = cache(async (slug: string) => {
             include: {
                 ProductImage: {
                     select: {
-                        url: true
+                        url: true,
+                        id: true,
+                        productId: true
                     }
                 }
             }
