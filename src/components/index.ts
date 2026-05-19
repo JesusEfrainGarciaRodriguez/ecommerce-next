@@ -18,6 +18,7 @@ export * from './product/slideshow/ProductSlideshow';
 export * from './product/slideshow/ProductMobileSlideshow';
 export * from './product/stock-label/StockLabel';
 export * from './product/add-to-cart/AddToCart';
+export * from './product/product-image/ProductImage';
 
 export * from './cart/products-in-cart/ProductsInCart';
 export * from './cart/order-summary/OrderSummary';

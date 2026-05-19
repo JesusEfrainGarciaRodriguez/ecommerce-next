@@ -8,17 +8,11 @@ export const getProductBySlug = cache(async (slug: string) => {
         const product = await prisma.product.findUnique({
             where: { slug },
             include: {
-                ProductImage: {
-                    select: {
-                        url: true,
-                        id: true,
-                        productId: true
-                    }
-                }
+                ProductImage: true,
             }
         })
         if (!product) {
-            throw new Error("Producto no encontrado")
+            return null
         }
         return {
             ...product,
