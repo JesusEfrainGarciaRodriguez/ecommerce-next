@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createUpdateProduct } from "@/actions";
+import { ProductImage } from "@/components";
 
 interface Props {
   product: Partial<Product> & { ProductImage?: ProductWithImage[] };
@@ -89,6 +90,12 @@ export const ProductForm = ({ product, categories }: Props) => {
     formData.append("tags", productToSave.tags);
     formData.append("categoryId", productToSave.categoryId);
     formData.append("gender", productToSave.gender);
+
+    if ( images ) {
+      for ( let i = 0; i < images.length; i++  ) {
+        formData.append('images', images[i]);
+      }
+    }
 
     const { ok, product: updatedProduct } = await createUpdateProduct(formData);
 
@@ -230,13 +237,12 @@ export const ProductForm = ({ product, categories }: Props) => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {product.ProductImage?.map((image) => (
               <div key={image.id}>
-                <Image
+                <ProductImage
                   alt={product.title ?? ""}
-                  src={`/products/${image.url}`}
+                  src={image.url}
                   width={300}
                   height={300}
                   className="rounded-t shadow-md"
-                  loading="eager"
                 />
 
                 <button
