@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { Gender, Product, Size } from "../../../generated/prisma/client";
+import { revalidatePath } from "next/cache";
 
 const productSchema = z.object({
   id: z.uuid().optional().nullable(),
@@ -68,6 +69,10 @@ export const createUpdateProduct = async (formData: FormData) => {
         product,
       };
     });
+
+    revalidatePath("/admin/products");
+    revalidatePath(`/admin/product/${prismaTx.product.slug}`);
+    revalidatePath(`/product/${prismaTx.product.slug}`);
 
     return {
       ok: true,
