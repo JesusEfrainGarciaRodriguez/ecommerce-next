@@ -9,8 +9,7 @@ import {
 } from "@/interfaces";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { createUpdateProduct } from "@/actions";
+import { createUpdateProduct, deleteProductImage } from "@/actions";
 import { ProductImage } from "@/components";
 
 interface Props {
@@ -247,7 +246,7 @@ export const ProductForm = ({ product, categories }: Props) => {
 
                 <button
                   type="button"
-                  onClick={() => {}}
+                  onClick={() => deleteProductImage(image.id, image.url)}
                   className="btn-danger w-full rounded-b-xl"
                 >
                   Eliminar
