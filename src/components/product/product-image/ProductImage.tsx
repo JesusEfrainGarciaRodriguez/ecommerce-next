@@ -1,3 +1,4 @@
+import { getProductImage } from "@/utils";
 import Image from "next/image";
 
 interface Props {
@@ -17,11 +18,7 @@ export const ProductImage = ({
   width,
   height,
 }: Props) => {
-  const localSrc = src
-    ? src.startsWith("http")
-      ? src
-      : `/products/${src}`
-    : "/imgs/placeholder.jpg";
+  const localSrc = getProductImage(src);
 
   return (
     <Image

@@ -1,29 +1,32 @@
 export const revalidate = 604800; // 7 días en segundos
 
-import { AddToCart, ProductMobileSlideshow, ProductSlideshow, StockLabel } from "@/components";
+import {
+  AddToCart,
+  ProductMobileSlideshow,
+  ProductSlideshow,
+  StockLabel,
+} from "@/components";
 import { getProductBySlug } from "@/actions";
 import { notFound } from "next/navigation";
 import { Metadata, ResolvingMetadata } from "next";
+import { getProductImage } from "@/utils";
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const slug = (await params).slug
-   const product = await getProductBySlug(slug)
- 
+  const slug = (await params).slug;
+  const product = await getProductBySlug(slug);
+
   return {
-    title: `${product.title}`,
-    description: product.description,
+    title: product?.title ?? "Producto no encontrado",
+    description: product?.description ?? "",
     openGraph: {
-      title: `${product.title}`,
-      description: product.description,
-      images: product.images.map((image) => ({
-        url: `${process.env.BASE_URL}/products/${image}`,
-        alt: product.title,
-      })),
+      title: product?.title ?? "Producto no encontrado",
+      description: product?.description ?? "",
+      images: [getProductImage(product?.images[0])],
     },
-  }
+  };
 }
 
 interface Props {
@@ -61,12 +64,10 @@ export default async function ProductPage({ params }: Props) {
       <div className="col-span-1 px-5">
         <StockLabel slug={product.slug} />
 
-        <h1 className="antialiased font-bold text-xl">
-          {product.title}
-        </h1>
+        <h1 className="antialiased font-bold text-xl">{product.title}</h1>
         <p className="text-lg mb-5">${product.price}</p>
 
-        <AddToCart product={product}/>
+        <AddToCart product={product} />
 
         {/* Descripción */}
         <h3 className="font-bold text-sm">Descripción</h3>
