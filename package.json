@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "tsx src/seed/seed-database.ts"
+    "seed": "tsx src/seed/seed-database.ts",
+    "prisma:deploy": "npx prisma migrate deploy && prisma generate"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^9.2.0",
